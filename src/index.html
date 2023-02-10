@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Recipe Calculator </title>
+  <script src="./main.js" defer></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="title">
+    <h3> beautiful app uwu </h3>
+  </div>
+  
+  <div id="ingredIn"> 
+    <p> Ingredients List: </p>
+    <textarea rows="8" cols="40"></textarea>
+  </div>
+
+  <div id="adjust">
+    <h4> Adjust Recipe </h4>
+    <p> <input type="checkbox"> Adjust Servings </p>
+    <p> Adjust By <select>
+      <option value="servings"> Servings </option>
+      <option value="scaleFactor"> Scale Factor </option>
+      <option value="cost"> Cost </option>
+    </select> </p>
+    <p> Servings: <input type="text" value="1"> </p>
+  </div>
+
+  <div>
+    <input type="button" value="Calculate" onclick="main()">
+  </div>
+
+  <div id="output">
+    <h4> Cost of Ingredients </h4>
+    <p> Net Cost: <input type="text" value="$69.420"> </p>
+    <div id="ingredOut">
+      ingredients go here lol
+    </div>
+  </div>
+</body>
+</html>

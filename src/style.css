@@ -1,0 +1,31 @@
+label {
+  display: block;
+}
+
+body {
+  background-color: rgb(176, 199, 222);
+  color: rgb(0, 0, 0);
+}
+
+div {
+  border: 2px solid black;
+  margin: 10px;
+  padding: 5px;
+}
+
+#ingredOut {
+  border: 0px;
+}
+
+input {
+  background-color: rgb(220, 231, 242);
+}
+
+select {
+  background-color: rgb(220, 231, 242);
+}
+
+textarea {
+  resize: none;
+  background-color: rgb(220, 231, 242);
+}

@@ -1,46 +1,69 @@
+const { PythonShell } = require('python-shell')
+
+class Ingredient {
+  constructor (name, amount, unit) {
+    this.name = name
+    this.amount = amount
+    this.unit = unit
+  }
+}
+
+
 function main () {
-  const ingredientList = document.getElementById('ingredIn')
+  const ingredientList = document.getElementById('ingredInText').value
   const ingredientLines = ingredientList.split('\n')
 
-  const ingredients = []
+  let ingredients = []
 
   for (const line of ingredientLines) {
     let result = parseIngredient(line)
-    // if result is a manual parsing request, act on it and call again
+
+    if (result === "manual") {
+      // if result is a manual parsing request, act on it and call again
+    }
 
     ingredients.push(result)
   } 
   
-  // ingredients is now a 2d array: [['1 cup', 'ap flour'], ['1 1/2 c.', 'granulated sugar'], ['4oz', 'whole milk']]
+  // ingredients is now an array of Ingredient objects [...]
 
   for (const ing of ingredients) {
-    //ing is ['1 cup', 'ap flour'] or similar
-    //convert text into a target product id and amount by weight?
-    //show best guesses for products and allow user to adjust
+    // ing is an instance of Ingredient
+    // convert ing.name into target product id and add as a property; maybe `.identifier`
+    // show best guesses for products and allow user to adjust
   }
 
-  // we now have a 2d array of [wght, tid]
-  // alternatively, we might be able to make a map (dictionary in python) {
-  // 'ap flour': [wght, tid],
-  // ...
-  // }
-
-  // for each element in the map, get the total price of it, update the map?
-
-  // then, send all that shit to the dom lmao
+  // do a bunch of calculations, starting with converting everything to target prices
+  // then, send all that crap to the dom lmao
 }
 
-function parseIngredient (line) {
-  let amount
-  let ingredient
-  // parse stuff with python lol
-
-  // return a manual parsing request if it fails some check; will need troubleshooting
-
-  return [amount, ingredient]
+async function runPython(file, args) {
+  const { success, err = '', results } = await new Promise((resolve, reject) => {
+    PythonShell.run(file, { args: args }, (err, results) => {
+      if (err) {
+        reject({ success: false, err: err})
+      }
+      resolve({ success: true, results: results})
+    })
+  })
+  return [success, err, results]
 }
 
-function convertToWeight(amount, ingredient) {
+
+async function parseIngredient (line) {
+  results = await runPython('parseIngredient.py', [line])
+
+  if (results[0] === false) {
+    console.error(results[1])
+    return "manual"
+  }
+
+  const ingredient = new Ingredient(...(JSON.parse(results[2][0].replaceAll("'", '"'))))
+  return ingredient
+}
+
+function convertToWeight(ingredient) {
+  // we'll need to do a lot of unit conversions; perhaps we can use some data structure to do that?
   // how the hell are we gonna do this lmao
 }
 

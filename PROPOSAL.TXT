@@ -1,0 +1,49 @@
+-=PROJECT PROPOSAL=-
+Project: Recipe Web Scraper
+Authors: Declan Moore, Evan Scherrer
+
+
+-=ABSTRACT=-
+This project aims to solve the problem of managing costs while preparing recipes
+in bulk. It is of high importance that, when preparing food in this way, that it
+is priced appropriately. To do this, knowledge of the cost of ingredients used
+is required. This project aims to reduce the strain of this task by scanning a
+database of ingredient costs and their quantities, and by automatic calculation
+of the total ingredient cost of a recipe per serving, allowing for easily
+adjusting the recipe on the basis of cost or quantity.
+
+-=OUTLINE=-
+This project allows user input of a set of ingredients specified by  the user. 
+It will parse this ingredients list for the quantities and names of each of the
+ingredients in the list. From this, it will convert all the ingredients to the
+same internal unit for ease of mathematics. 
+After the user has inputted their recipe, the program will search the Target
+database for each of the listed ingredients and determine their price per unit.
+Knowing this, the program can calculate the average ingredient cost per batch,
+and allow the user to adjust the quantity of food prepared on the basis of cost,
+or by other scaling factors and compute the appropriate cost.
+The program will also allow for user correction if the program has made an error
+when parsing the ingredients list or searching the database. For example, if the
+user has a recipe using simply "flour" and the automatic database search turns
+up a result for "almond flour," it may lead to incorrect costs being computed. 
+In this event, the program will allow the user to examine the ingredients that
+it has parsed and correct them if necessary.
+
+-=DATA STRUCTURES=-
+A variety of data structures will be used in this project. 
+List:
+  Lists will be used in the parsing of recipes. Recipes will be split into a
+  list of strings, one string per each input line. This will aid in the parsing
+  of recipe data.
+Dictionary:
+  A dictionary will be used to keep track of quantities of ingredients used. It
+  will use the ingredient name as a key, and the quantity used as a value. It
+  will need to be adjusted, however, to allow for case-insensitive key searching
+  to aid in ease of use. It will also be beneficial to ensure that the
+  dictionary is sorted by value. This will ensure that ingredients used will be
+  in relative order of usage. This may be implemented by use of a custom hash
+  table with a user-specified comparator function. It may be possible to use a
+  linear search to search the dictionary by key, which may work well enough
+  given the expected size of the data is not very large. The process can be sped
+  up by use of a hash comparison. Binary search using the user-specified
+  comparator can be used to search by value.

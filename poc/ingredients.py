@@ -130,13 +130,19 @@ def rp_parse_ingredient(string):
 		
 		#metric volumes
 		"liter": ["liter", "liters", "litre", "litres", "l"],
-		"cubic centimeter": ["cubic centimeter", "cubic centimeters", "cc", "ccs"],
-		"milliliter": ["milliliter", "milliliters", "millilitre", "millilitres", "ml"],
+		"milliliter": ["milliliter", "milliliters", "millilitre", "millilitres", "ml",
+			"cubic centimeter", "cubic centimeters", "cc", "ccs"],
 		
 		#metric weights
 		"gram": ["gram", "grams", "g"],
 		"kilogram": ["kilogram", "kilograms", "kg", "kgs", "kilo", "kilos"]
 	}
+	
+	#equivalents for centimeter
+	cm_aliases = ["cm", "cm.", "centimeter", "centimeters", "centimetre", "centimetres"]
+	
+	#equivalents for ounce
+	oz_aliases = ["oz", "oz.", "ounce", "ounces"]
 	
 	#parse quantity. Mainly expand abbreviated unit names, and combine "fl oz" to one token
 	unit_tok = tok[0]
@@ -151,14 +157,27 @@ def rp_parse_ingredient(string):
 		if unit_tok in names:
 			unit_name = full_name
 			break
+	
+	#if token isn't known, return an error
+	if unit_name == None:
+		return (0, None, None)
 		
 	#consume a token
 	tok = tok[1:]
 	if unit_tok == "fl" or unit_tok == "fluid":
-		if len(tok) > 0 and (tok[0] == "oz" or tok[0] == "oz." or tok[0] == "ounce" or tok[0] == "ounces"):
+		if len(tok) > 0 and (tok[0] in oz_aliases):
 			tok = tok[1:]
 		else:
 			return (0, None, None)
+	if unit_tok == "cubic":
+		if len(tok) > 0 and (tok[0] in cm_aliases):
+			tok = tok[1:]
+		else:
+			return (0, None, None)
+	
+	#if next token is "of", skip
+	if len(tok) > 0 and tok[0] == "of":
+		tok = tok[1:]
 	
 	return (amount, unit_name, " ".join(tok))
 	

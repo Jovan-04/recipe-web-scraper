@@ -35,15 +35,32 @@ List:
   Lists will be used in the parsing of recipes. Recipes will be split into a
   list of strings, one string per each input line. This will aid in the parsing
   of recipe data.
-Dictionary:
-  A dictionary will be used to keep track of quantities of ingredients used. It
-  will use the ingredient name as a key, and the quantity used as a value. It
-  will need to be adjusted, however, to allow for case-insensitive key searching
-  to aid in ease of use. It will also be beneficial to ensure that the
-  dictionary is sorted by value. This will ensure that ingredients used will be
-  in relative order of usage. This may be implemented by use of a custom hash
-  table with a user-specified comparator function. It may be possible to use a
-  linear search to search the dictionary by key, which may work well enough
-  given the expected size of the data is not very large. The process can be sped
-  up by use of a hash comparison. Binary search using the user-specified
-  comparator can be used to search by value.
+Object Cache:
+  Since making redundant requests to remote APIs is both redundant and wasteful,
+  it will prove beneficial to have some form of caching results fetched from the
+  APIs. We will do this by implementing a cache file in JSON format. It will
+  store API results as key:value pairs, including the fetch timestamp. When the
+  file is loaded from the disk, entries will have their timestamps checked. If
+  they are older than the oldest record allowed, they will be purged from the
+  cache. Records purged from the cache will then need to be fetched again from
+  the remote API. 
+  
+-=ATTAINABILITY=-
+This project will be able to be completed by semester end since we have a clear
+goal in mind for what this project should look like. Its main features have been
+planned out in advance, and some of thecore functionality implemented as of now.
+
+-=HINDRANCES=-
+A difficulty we have already encountered is the problem of converting data to a
+format compatible with the APIs we plan to use. The Target API for looking up
+ingredients by name, for example, does not list their volumes, but instead lists
+their weights. Since most recipes list ingredients by volume, it becomes
+necessary to convert these volumes into weights to match the API. This could be
+done by using a database of ingredients and their associated densities, allowing
+us to convert them to weights opaquely at runtime. For ingredients not found
+in the database, the user may be prompted for this information.
+
+Another hindrance we are likely to face is with the reliability of API search
+results. As an example, searching "flour" and "AP flour" may turn up different,
+possibly wrong results from the API. Some sort of conversion or preprocessing
+can be done to mitigate this effect potentially.

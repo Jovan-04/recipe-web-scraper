@@ -12,6 +12,7 @@
 
 def rp_parse_integer(string):
 	val = 0
+	i = 0
 	for i in range(len(string)):
 		chr = string[i]
 		
@@ -23,6 +24,10 @@ def rp_parse_integer(string):
 		else:
 			#not digit, break
 			break
+		
+		#HACK: Python does for loops weirdly, so this is necessary
+		if i == len(string) - 1:
+			i += 1
 	
 	#return a tuple: (value, remainder of string)
 	return (val, string[i:])
@@ -110,8 +115,8 @@ def rp_parse_ingredient(string):
 	#tokenize
 	tok = string.lower().split(" ")
 	
-	#if there's only one (or no) token, return error
-	if (len(tok) <= 1):
+	#if there's no token, return error
+	if (len(tok) == 0):
 		return (0, None, None)
 	
 	#dict of aliases and output names
@@ -147,7 +152,7 @@ def rp_parse_ingredient(string):
 	
 	#parse quantity. Mainly expand abbreviated unit names, and combine "fl oz" to one token
 	unit_tok = tok[0]
-	if unit_tok[-1] == ".":
+	if len(unit_tok) > 0 and unit_tok[-1] == ".":
 		unit_tok = unit_tok[:-1]
 	unit_name = None
 	
@@ -159,7 +164,13 @@ def rp_parse_ingredient(string):
 			unit_name = full_name
 			break
 	
-	#if token isn't known, return an error
+	#if token isn't known, return it as a count if it's an integer. Otherwise, error.
+	if unit_name == None and amount == int(amount) and amount > 0:
+		ingredient = " ".join(tok).strip()
+		if len(ingredient) > 0:
+			return (amount, "count", " ".join(tok))
+		else:
+			return (0, None, None)
 	if unit_name == None:
 		return (0, None, None)
 		

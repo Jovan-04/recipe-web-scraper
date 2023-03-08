@@ -1,0 +1,14 @@
+{
+  "flour":{
+      "walmart":{
+          "unix_time_updated":1678214726,
+          "cents_per_gram": 12.5,
+          "identifier":"13016243"
+      },
+      "target":{
+          "unix_time_updated":1678214726,
+          "cents_per_gram": 12.5,
+          "identifier":"13016243"
+      }
+  }
+}

@@ -9,14 +9,14 @@ class Ingredient {
 }
 
 
-function main () {
+async function main () {
   const ingredientList = document.getElementById('ingredInText').value
   const ingredientLines = ingredientList.split('\n')
 
   let ingredients = []
 
   for (const line of ingredientLines) {
-    let result = parseIngredient(line)
+    let result = await parseIngredient(line)
 
     if (result === "manual") {
       // if result is a manual parsing request, act on it and call again
@@ -26,6 +26,7 @@ function main () {
   } 
   
   // ingredients is now an array of Ingredient objects [...]
+  console.log(ingredients)
 
   for (const ing of ingredients) {
     // ing is an instance of Ingredient

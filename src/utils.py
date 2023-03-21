@@ -191,4 +191,4 @@ def rp_parse_ingredient(string):
 	if len(tok) > 0 and tok[0] == "of":
 		tok = tok[1:]
 	
-	return (amount, unit_name, " ".join(tok))
+	return (amount, unit_name, " ".join(tok).strip())

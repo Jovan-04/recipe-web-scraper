@@ -8,11 +8,6 @@ class Ingredient {
     this.unit = unit
     this.name = name
   }
-
-  updateAmount(newAmount, newUnit) { // unnecessary?
-    this.amount = newAmount
-    this.unit = newUnit
-  }
 }
 
 const fromXToGrams = { // multiply X by this number to get grams
@@ -51,23 +46,44 @@ async function main () {
   } 
   
   // ingredients is now an array of Ingredient objects [...]
-  console.log(ingredients)
 
   let ingredientsByWeight = []
   for (const ing of ingredients) {
     ingWeight = convertToWeight(ing)
     ingredientsByWeight.push(ingWeight)
-    // ing is an instance of Ingredient
-    
-    // first, convert name (density) and quantity to weight, prompting user for any missing weights
     // update Ingredient instance to reflect the new weight
     // search cache to link ing.name into target & walmart product ids and add as a property; .targetID and .walmartID respectively
     // show best guesses for products and allow user to adjust; display parts of their web pages?
 
   }
+
   console.log(ingredientsByWeight)
-  // do a bunch of calculations, starting with converting everything to target prices
-  // then, send all that crap to the dom lmao
+
+  const retailer = document.getElementById('selectRetailer').value
+  const toDom = []
+  let netPrice = 0
+
+  for (const ing of ingredientsByWeight) {
+    const centsPerGram = cache[ing.name][retailer]['cents_per_gram']
+    const price = parseFloat(((ing.amount * centsPerGram) / 100).toFixed(2))
+    console.log(`${ing.amount}g of ${ing.name} costs $${price} from ${retailer}.`)
+    output = `${ing.amount}g ${ing.name}: $${price}`
+    
+    toDom.push(output)
+    netPrice += price
+  }
+
+  const target = document.getElementById("ingredOut")
+  target.innerHTML = ""
+
+  for (const ing of toDom) {
+    const p = document.createElement('p')
+    p.innerHTML = ing
+    target.appendChild(p)
+  }
+
+  document.getElementById('netCost').value = netPrice
+
 }
 
 async function runPython(file, args) {
@@ -118,10 +134,6 @@ function convertToWeight(ingredient) {
 
 }
 
-function convertToTID (ingredient) {
-  // again, how the hell are we gonna do this lmao
-}
-
 function ingredientPrice (pricePerWeight, weight) {
   return pricePerWeight * weight // convert units & format here if needed; return as a string?
 }
@@ -131,4 +143,15 @@ function checkPrice (tid) {
   // use beautiful soup lib if the api doesn't work, but hopefully we won't have to touch that lol
 
   // how do we want to return this? price per unit of weight?
+}
+
+function updateScaleText() {
+  label = document.getElementById("serSclCostLabel")
+  select = document.getElementById("adjustMenu")
+  texts = {
+    '0': 'Servings: ',
+    '1': 'Scale To: ',
+    '2': 'Target Cost: $'
+  }
+  label.innerHTML = texts[select.selectedIndex]
 }

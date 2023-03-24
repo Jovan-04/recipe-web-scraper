@@ -10,9 +10,9 @@
 </head>
 <body>
   <div id="title">
-    <h3> beautiful app </h3>
+    <h3> edna the beautiful app </h3>
   </div>
-  
+
   <div id="ingredIn"> 
     <p> Ingredients List: </p>
     <textarea id="ingredInText" rows="8" cols="40"></textarea>
@@ -21,17 +21,13 @@
 
   <div id="adjust">
     <h4> Adjust Recipe </h4>
-    <p> <input type="checkbox" id="cbAdjust"> <label for="cbAdjust"> Adjust Servings </label> </p>
-    <p> Adjust By <select>
+    <p> <input type="checkbox" id="cbAdjust"> <label for="cbAdjust"> Adjust Quantity </label> </p>
+    <p> Adjust By <select id="adjustMenu" onchange="updateScaleText()">
       <option value="servings"> Servings </option>
       <option value="scaleFactor"> Scale Factor </option>
       <option value="cost"> Cost </option>
     </select> </p>
-    <p> Servings: <input type="text" value="1"> </p>
-  </div>
-
-  <div>
-    <input type="button" value="Calculate" onclick="main()">
+    <p id="serSclCostLabel" style="display: inline;"> Servings: </p> <input type="text" id="serSclCostInput" value="1">
   </div>
 
   <div id="output">
@@ -40,10 +36,15 @@
       <option value="target"> Target </option>
       <option value="walmart"> Walmart </option>  
     </select> </p>
-    <p> Net Cost: <input type="text" value="$69.420"> </p>
+    <p> Net Cost: $<input id="netCost" type="text" value="0.00" readonly> </p>
     <div id="ingredOut">
-      ingredients go here lol
+      <p> No ingredients selected </p>
     </div>
   </div>
+
+  <div>
+    <input type="button" value="Calculate" onclick="main()">
+  </div>
+
 </body>
 </html>

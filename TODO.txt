@@ -1,4 +1,6 @@
 TODO:
-	Graphical User Interface
-	Text Recipe Parsing
 	Recipe Scaling
+	better GUI
+	improve parser
+	implement check price for walmart.com
+	fuzzy string substitution

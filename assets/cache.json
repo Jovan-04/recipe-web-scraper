@@ -1,14 +1,38 @@
 {
-  "flour":{
-      "walmart":{
-          "unix_time_updated":1678214726,
-          "cents_per_gram": 0.0935,
-          "identifier":"13016243"
-      },
-      "target":{
-          "unix_time_updated":1678214726,
-          "cents_per_gram": 0.1054,
-          "identifier":"13016243"
-      }
-  }
+    "flour": {
+        "target": {
+            "unix_time_updated": 1679858557,
+            "cents_per_gram": 0.1054,
+            "identifier": "77640693"
+        },
+        "walmart": {
+            "unix_time_updated": 1679717363,
+            "cents_per_gram": 0.0935,
+            "identifier": "10403017"
+        }
+    },
+    "butter": {
+        "target": {
+            "unix_time_updated": 1679710824,
+            "cents_per_gram": 0.8796,
+            "identifier": "54445965"
+        },
+        "walmart": {
+            "unix_time_updated": 1679710824,
+            "cents_per_gram": 0.8744,
+            "identifier": "132893363"
+        }
+    },
+    "sugar": {
+        "target": {
+            "unix_time_updated": 1679859555,
+            "cents_per_gram": 0.1648,
+            "identifier": "78471310"
+        },
+        "walmart": {
+            "unix_time_updated": 1679859556,
+            "cents_per_gram": 1.7596,
+            "identifier": "607145619"
+        }
+    }
 }

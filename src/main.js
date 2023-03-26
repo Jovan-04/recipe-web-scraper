@@ -1,6 +1,11 @@
 const { PythonShell } = require('python-shell')
+const fs = require('fs')
 const cache = require('../assets/cache.json')
 const densities = require('../assets/densities.json')
+const { resolve } = require('path')
+const { once } = require('events')
+
+const sleep = ms => new Promise((resolve) => setTimeout(resolve, ms)) // put this in utils.js
 
 class Ingredient {
   constructor (amount, unit, name) {
@@ -9,6 +14,8 @@ class Ingredient {
     this.name = name
   }
 }
+
+const retailers = ['target', 'walmart']
 
 const fromXToGrams = { // multiply X by this number to get grams
   'ounce': 28.35,
@@ -42,19 +49,23 @@ async function main () {
       // if result is a manual parsing request, act on it and call again
     }
 
+    if (result === 'None') continue
+
     ingredients.push(result)
-  } 
+  }
   
   // ingredients is now an array of Ingredient objects [...]
+  const ingredientNames = new Set() // these are all the ingredients we need to get prices for
+  for (const ing of ingredients) {
+    ingredientNames.add(ing.name)
+  }
+
+  await updateIngredients(ingredientNames)
 
   let ingredientsByWeight = []
   for (const ing of ingredients) {
     ingWeight = convertToWeight(ing)
     ingredientsByWeight.push(ingWeight)
-    // update Ingredient instance to reflect the new weight
-    // search cache to link ing.name into target & walmart product ids and add as a property; .targetID and .walmartID respectively
-    // show best guesses for products and allow user to adjust; display parts of their web pages?
-
   }
 
   console.log(ingredientsByWeight)
@@ -67,7 +78,7 @@ async function main () {
     const centsPerGram = cache[ing.name][retailer]['cents_per_gram']
     const price = parseFloat(((ing.amount * centsPerGram) / 100).toFixed(2))
     console.log(`${ing.amount}g of ${ing.name} costs $${price} from ${retailer}.`)
-    output = `${ing.amount}g ${ing.name}: $${price}`
+    output = `${Math.round(ing.amount)}g ${ing.name}: $${price}`
     
     toDom.push(output)
     netPrice += price
@@ -82,7 +93,7 @@ async function main () {
     target.appendChild(p)
   }
 
-  document.getElementById('netCost').value = netPrice
+  document.getElementById('netCost').value = netPrice.toFixed(2)
 
 }
 
@@ -106,6 +117,8 @@ async function parseIngredient (line) {
     console.error(results[1])
     return "manual"
   }
+
+  if (results[2][0] === '[0, None, None]') return 'None' // empty line got parsed, ignore it
 
   const ingredient = new Ingredient(...(JSON.parse(results[2][0].replaceAll("'", '"'))))
   return ingredient
@@ -131,21 +144,139 @@ function convertToWeight(ingredient) {
     const newUnit = 'gram'
     return new Ingredient(newAmount, newUnit, ingredient.name)
   }
-
 }
 
-function ingredientPrice (pricePerWeight, weight) {
-  return pricePerWeight * weight // convert units & format here if needed; return as a string?
+async function updateIngredients(ingredients) {
+  const entriesToCreate = []
+
+  for (const ing of ingredients.values()) {
+    if (cache.hasOwnProperty(ing)) { // check timestamp and update if needed
+      console.log(`${ing} found in cache`)
+      const now = Math.round((Date.now()) / 1000)
+
+      for (const rtlr of ['target']/* retailers*/) {
+        const product = cache[ing][rtlr]
+        const time = product['unix_time_updated']
+        if ((now - time) > /*1209600*/10) { // cached price is more than two weeks old, update
+          const cpg = await getIngredientPrice(rtlr, product['identifier'])
+          product['cents_per_gram'] = parseFloat(cpg.toFixed(4))
+          product['unix_time_updated'] = now
+        }
+      }
+      
+    } else {
+      console.log(`${ing} not found in cache`)
+      entriesToCreate.push(ing)
+    }
+  }
+
+  if (entriesToCreate.length > 0) {
+    const popup = window.open('./popup.html', undefined, "width=600,height=400")
+    const allSearchResults = {}
+  
+    for (const rtlr of retailers) {
+      allSearchResults[rtlr] = {}
+      const rtlrDiv = popup.document.createElement('div')
+      rtlrDiv.setAttribute('id', rtlr)
+      rtlrDiv.innerHTML = `<h4> ${rtlr.toUpperCase()} </h4>`
+
+      for (const ing of entriesToCreate) {
+        const searchResults = await getSearchResults(rtlr, ing)
+        allSearchResults[rtlr][ing] = searchResults
+
+        const para = popup.document.createElement('p')
+        const button = popup.document.createElement('button')
+        button.innerText = 'Change'
+        button.onclick = function () {
+          popup.console.log(this.parentNode.textContent)
+        }
+        para.innerHTML = `<b>${ing.toUpperCase()}:</b> ${searchResults[0]}`
+        para.appendChild(button)
+
+        rtlrDiv.appendChild(para)
+      }
+
+      const container = popup.document.body
+      container.append(rtlrDiv)
+    }
+
+    popup.console.log(allSearchResults)
+    await waitUntilClose(popup)
+
+    const termToUID = {}
+    for (const rtlr of retailers) {
+      const div = popup.document.getElementById(rtlr)
+      termToUID[rtlr] = {}
+      div.querySelectorAll('p').forEach((prod) => {
+        const p = prod.innerText
+        termToUID[rtlr][p.slice(0, p.indexOf(':')).toLowerCase()] = p.slice(p.lastIndexOf('(UID): ')+6, -6).trim()
+      })
+    }
+    console.log(termToUID)
+
+    for (const rtlr of retailers) {
+      const now = Math.round((Date.now()) / 1000)
+      for (const [term, identifier] of Object.entries(termToUID[rtlr])){
+        const cpg = await getIngredientPrice(rtlr, identifier)
+        
+        if (!cache.hasOwnProperty(term)) { cache[term] = {} }
+
+        cache[term][rtlr] = {
+          "unix_time_updated": now,
+          "cents_per_gram": parseFloat(cpg.toFixed(4)),
+          "identifier": identifier
+        }
+      }
+    }
+  }
+
+  console.log('saving file...')
+  fs.writeFile('../assets/cache.json', JSON.stringify(cache), (err) => {
+    if (err) throw err
+    console.log('file saved')
+  })
 }
 
-function checkPrice (tid) {
-  // send api requests with python
-  // use beautiful soup lib if the api doesn't work, but hopefully we won't have to touch that lol
+async function getIngredientPrice(retailer, identifier) {
+  const results = await runPython('./checkPrice.py', [retailer, identifier])
 
-  // how do we want to return this? price per unit of weight?
+  if (!results[0]) {
+    console.error(results[1])
+    return
+  }
+
+  const price = new Ingredient(...JSON.parse(results[2][0].replaceAll("'", '"')))
+  const priceGrams = convertToWeight(price)
+  const pricePerGram = (100 * parseFloat(priceGrams.name)) / priceGrams.amount
+
+  return pricePerGram
 }
 
-function updateScaleText() {
+async function getSearchResults(retailer, query) {
+  const results = await runPython('./searchResults.py', [retailer, query])
+
+  if (!results[0]) {
+    console.error(results[1])
+    return
+  }
+
+  const products = JSON.parse(results[2][0].replaceAll("'", '"'))
+
+  return products
+}
+
+
+function waitUntilClose(window) { // more utils!!!
+  return new Promise((resolve) => {
+    function onClose() {
+      window.removeEventListener('unload', onClose)
+      resolve()
+    }
+    window.addEventListener('unload', onClose)
+  })
+}
+
+function updateScaleText() { // move to a utils.js file
   label = document.getElementById("serSclCostLabel")
   select = document.getElementById("adjustMenu")
   texts = {

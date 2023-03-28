@@ -9,19 +9,19 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div id="title">
+  <fieldset id="title">
     <h3> EDNA - Edible Data & Numerical Analysis </h3>
-    <h5> A recipe parser, web scraper, and cost calculator created by Declan Moore and Evan Scherrer </h5>
-  </div>
+	<p> A recipe parser, web scraper, and cost calculator created by Declan Moore and Evan Scherrer </p>
+  </fieldset>
 
-  <div id="ingredIn"> 
-    <p> Ingredients List: </p>
+  <fieldset id="ingredIn"> 
+    <legend> Ingredients List </legend>
     <textarea id="ingredInText" rows="8" cols="40"></textarea>
     <p> Makes <input type="number" style="width: 40px;"> servings (optional) </p>
-  </div>
+  </fieldset>
 
-  <div id="adjust">
-    <h4> Adjust Recipe </h4>
+  <fieldset id="adjust">
+    <legend> Adjust Recipe </legend>
     <p> <input type="checkbox" id="cbAdjust"> <label for="cbAdjust"> Adjust Quantity </label> </p>
     <p> Adjust By <select id="adjustMenu" onchange="updateScaleText()">
       <option value="servings"> Servings </option>
@@ -29,10 +29,10 @@
       <option value="cost"> Cost </option>
     </select> </p>
     <p id="serSclCostLabel" style="display: inline;"> Servings: </p> <input type="text" id="serSclCostInput" value="1">
-  </div>
+  </fieldset>
 
-  <div id="output">
-    <h4> Cost of Ingredients </h4>
+  <fieldset id="output">
+    <legend> Cost of Ingredients </legend>
     <p> Retailer: <select name="retailer" id="selectRetailer">
       <option value="target"> Target </option>
       <option value="walmart"> Walmart </option>  
@@ -41,9 +41,9 @@
     <div id="ingredOut">
       <p> No ingredients selected </p>
     </div>
-  </div>
+  </fieldset>
 
-  <div>
+  <div class="uipadding">
     <input type="button" value="Calculate" onclick="main()">
   </div>
 

@@ -1,27 +1,112 @@
 body {
-  background-color: rgb(176, 199, 222);
-  color: rgb(0, 0, 0);
+	margin: 0px;
+	padding: 5px;
+	background-color: #F0F0F0;
+	font-family: Segoe UI, Tahoma, Sans-Serif;
+	user-select: none;
+	-webkit-user-select: none;
 }
 
-div {
-  border: 2px solid black;
-  margin: 10px;
-  padding: 5px;
+/* standard headings et cetera */
+h1, h2, h3, h4, h5, h6, h7 {
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
-#ingredOut {
-  border: 0px;
+/* BUTTON pushbutton control */
+button, input[type=button], input[type=submit] {
+	font-family: Segoe UI, Tahoma, Sans-Serif;
+	height: 21px;
+	box-sizing: border-box;
+	border: 1px solid #D0D0D0;
+	background-color: #FDFDFD;
+	min-width: 100px;
+	border-radius: 3px;
+	transition: border 0.5s, background-color 0.5s;
+	outline-offset: -3.5px;
+}
+button:hover, input[type=button]:hover, input[type=submit]:hover {
+	border: 1px solid #0078D4;
+	background-color: #E0EEF9;
+}
+button:active, input[type=button]:active, input[type=submit]:active {
+	outline: none !important;
+}
+button:active, input[type=button]:active, input[type=submit]:active,
+button:focus, input[type=button]:focus, input[type=submit]:focus {
+	border: 1px solid #0078D4;
+	background-color: #FDFDFD;
+}
+button:focus, input[type=button]:focus, input[type=submit]:focus {
+	outline: 1px dotted #0D0D0D;
 }
 
-input {
-  background-color: rgb(220, 231, 242);
+/* BUTTON checkbox control */
+input[type=checkbox] {
+	/* eh just give up for now CSS is annoying as hell */
 }
 
-select {
-  background-color: rgb(220, 231, 242);
+/* BUTTON groupbox control */
+fieldset {
+	border: 1px solid #DCDCDC;
+	margin: 10px;
+	padding: 10px;
+}
+#title {
+	border: 1px solid #C0C0C0;
+}
+.uipadding {
+	margin: 10px;
+}
+p {
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
+/* EDIT control */
+input[type=text], input[type=number] {
+	height: 23px;
+}
 textarea {
-  resize: none;
-  background-color: rgb(220, 231, 242);
+	resize: none;
+	padding: 5px;
+}
+input[type=text], input[type=number], textarea {
+	font-family: Segoe UI, Tahoma, Sans-Serif;
+	box-sizing: border-box;
+	outline: none !important;
+	background-color: #FFFFFF;
+	border: 1px solid #E6E6E6;
+	border-bottom: 1px solid #838383;
+	border-radius: 3px;
+	min-width: 50px;
+	transition: border 0.5s, margin 0.5s;
+}
+input[type=text]:focus, input[type=number]:focus, textarea:focus {
+	border-bottom: 1px solid #0067C0; /* proper 2px border causes rendering glitches */
+}
+
+/* COMBOBOX control */
+select {
+	height: 23px;
+	box-sizing: border-box;
+	border: 1px solid #D2D2D2;
+	border-bottom: 1px solid #BCBCBC;
+	border-radius: 2px;
+	background-color: #FDFDFD;
+	transition: border 0.5s, background-color 0.5s;
+	min-width: 100px;
+	outline: none !important;
+	-webkit-user-select: none;
+}
+select:hover, select:active {
+	border: 1px solid #0078D4;
+	border-bottom: 1px solid #006CBE;
+	background-color: #E5F1FB;
+}
+option {
+	background-color: #FFFFFF;
+}
+option:hover {
+	background-color: #0078D7;
 }

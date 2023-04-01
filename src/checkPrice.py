@@ -23,7 +23,7 @@ def main(retailer, identification):
 
         amount, unit, nope = rp_parse_ingredient(weight)
         
-        return list([amount, unit, price])
+        return list([amount, unit, 'name', price])
 
     if retailer == 'walmart': # :face_vomiting:
 

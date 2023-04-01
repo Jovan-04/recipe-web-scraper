@@ -1,6 +1,8 @@
 TODO:
-	Recipe Scaling
 	better GUI
 	improve parser
 	implement check price for walmart.com
 	fuzzy string substitution
+	densities
+	processing of strings before and after parsing
+	make ingredient cost update when retailer menu gets switched, not have to calculate again

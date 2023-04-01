@@ -17,18 +17,18 @@
   <fieldset id="ingredIn"> 
     <legend> Ingredients List </legend>
     <textarea id="ingredInText" rows="8" cols="40"></textarea>
-    <p> Makes <input type="number" style="width: 40px;"> servings (optional) </p>
+    <p> Makes <input id="servingIn" type="number" style="width: 40px;" value="1"> servings (optional) </p>
   </fieldset>
 
   <fieldset id="adjust">
     <legend> Adjust Recipe </legend>
     <p> <input type="checkbox" id="cbAdjust"> <label for="cbAdjust"> Adjust Quantity </label> </p>
     <p> Adjust By <select id="adjustMenu" onchange="updateScaleText()">
-      <option value="servings"> Servings </option>
       <option value="scaleFactor"> Scale Factor </option>
+      <option value="servings"> Servings </option>
       <option value="cost"> Cost </option>
     </select> </p>
-    <p id="serSclCostLabel" style="display: inline;"> Servings: </p> <input type="text" id="serSclCostInput" value="1">
+    <p id="serSclCostLabel" style="display: inline;"> Scale To: </p> <input type="number" id="serSclCostInput" value="1">
   </fieldset>
 
   <fieldset id="output">

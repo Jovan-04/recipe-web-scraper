@@ -7,4 +7,6 @@ def main(line):
 
 if __name__ == "__main__":
     output = main(argv[1])
-    print(list(output))
+    final = list(output)
+    final.append(None)
+    print(final)

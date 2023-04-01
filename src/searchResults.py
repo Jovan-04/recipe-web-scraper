@@ -57,10 +57,13 @@ def main(retailer, query):
         results = []
 
         for prod in products:
-            title = prod['name'].replace("'", "")
-            price = prod['priceInfo']['currentPrice']['priceString']
-            sku = prod['usItemId']
-            results.append(f'{title}: {price}; SKU (UID): {sku}')
+            try:
+                title = prod['name'].replace("'", "")
+                price = prod['priceInfo']['currentPrice']['priceString']
+                sku = prod['usItemId']
+                results.append(f'{title}: {price}; SKU (UID): {sku}')
+            except:
+                pass
         
         return results
 

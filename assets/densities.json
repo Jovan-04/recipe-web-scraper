@@ -3,5 +3,11 @@
   "butter": 0.955,
   "water": 0.9458,
   "sugar": 0.826,
-  "salt": 1.2
+  "salt": 1.2,
+  "oil": 0.917,
+  "milk": 0.959,
+  "vanilla": 0.947,
+  "baking soda": 1.217,
+  "baking powder": 0.812,
+  "cinnamon": 0.527
 }

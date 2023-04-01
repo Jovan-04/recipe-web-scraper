@@ -8,10 +8,11 @@ const { once } = require('events')
 const sleep = ms => new Promise((resolve) => setTimeout(resolve, ms)) // put this in utils.js
 
 class Ingredient {
-  constructor (amount, unit, name) {
+  constructor (amount, unit, name, price) {
     this.amount = amount
     this.unit = unit
     this.name = name
+    this.price = price
   }
 }
 
@@ -73,12 +74,44 @@ async function main () {
   const retailer = document.getElementById('selectRetailer').value
   const toDom = []
   let netPrice = 0
+  let modifier = 1
 
-  for (const ing of ingredientsByWeight) {
+  const input = document.getElementById("serSclCostInput")
+  const select = document.getElementById("adjustMenu")
+
+  //   label.innerHTML = texts[select.selectedIndex]
+  if (document.getElementById('cbAdjust').checked) {
+    switch (select.selectedIndex) {
+      case 0:
+        modifier = parseFloat(input.value)
+        break
+
+      case 1:
+        const recServ = document.getElementById('servingIn').value
+        const targetServ = input.value
+        modifier = targetServ / recServ
+        break
+        
+      case 2:
+        let tempPrice = 0
+        const targetPrice = parseFloat(input.value)
+        for (const ing of ingredientsByWeight) {
+          const centsPerGram = cache[ing.name][retailer]['cents_per_gram']
+          const price = parseFloat(((ing.amount * centsPerGram) / 100).toFixed(2))
+          tempPrice += price
+        }
+        modifier = Math.round(targetPrice / tempPrice)
+        break
+    }
+  }
+
+  for (const ing of ingredientsByWeight) { // calculte final price
     const centsPerGram = cache[ing.name][retailer]['cents_per_gram']
-    const price = parseFloat(((ing.amount * centsPerGram) / 100).toFixed(2))
-    console.log(`${ing.amount}g of ${ing.name} costs $${price} from ${retailer}.`)
-    output = `${Math.round(ing.amount)}g ${ing.name}: $${price}`
+    const price = parseFloat(((ing.amount * centsPerGram * modifier) / 100).toFixed(2))
+    const amount = ing.amount * modifier
+    const name = ing.name
+    console.log(`${amount}g of ${name} costs $${price} from ${retailer}.`)
+    output = `${amount.toFixed(1)}g ${name}: $${price}`
     
     toDom.push(output)
     netPrice += price
@@ -86,6 +119,10 @@ async function main () {
 
   const target = document.getElementById("ingredOut")
   target.innerHTML = ""
+
+  const p = document.createElement('p') // add modifier info
+  p.innerHTML = `Recipe Breakdown (${modifier}x original quantities):`
+  target.appendChild(p)
 
   for (const ing of toDom) {
     const p = document.createElement('p')
@@ -120,7 +157,9 @@ async function parseIngredient (line) {
 
   if (results[2][0] === '[0, None, None]') return 'None' // empty line got parsed, ignore it
 
-  const ingredient = new Ingredient(...(JSON.parse(results[2][0].replaceAll("'", '"'))))
+  const ing = JSON.parse(results[2][0].replaceAll("'", '"').replaceAll('None', null))
+
+  const ingredient = new Ingredient(...ing)
   return ingredient
 }
 
@@ -133,7 +172,7 @@ function convertToWeight(ingredient) {
   if (['ounce', 'pound', 'gram', 'kilogram'].includes(ingredient.unit)) {
     const newAmount = ingredient.amount * fromXToGrams[ingredient.unit]
     const newUnit = 'gram'
-    return new Ingredient(newAmount, newUnit, ingredient.name)
+    return new Ingredient(newAmount, newUnit, ingredient.name, ingredient.price)
   }
 
   // if it's a unit of volume, first convert it into cubic cm; then, cubic cm => grams using density (grams per cubic cm)
@@ -142,7 +181,7 @@ function convertToWeight(ingredient) {
 
     const newAmount = densities[ingredient.name] * mlAmount
     const newUnit = 'gram'
-    return new Ingredient(newAmount, newUnit, ingredient.name)
+    return new Ingredient(newAmount, newUnit, ingredient.name, ingredient.price)
   }
 }
 
@@ -158,7 +197,7 @@ async function updateIngredients(ingredients) {
         const product = cache[ing][rtlr]
         const time = product['unix_time_updated']
         if ((now - time) > /*1209600*/10) { // cached price is more than two weeks old, update
-          const cpg = await getIngredientPrice(rtlr, product['identifier'])
+          const cpg = await getIngredientPrice(rtlr, product['identifier'], ing)
           product['cents_per_gram'] = parseFloat(cpg.toFixed(4))
           product['unix_time_updated'] = now
         }
@@ -217,7 +256,7 @@ async function updateIngredients(ingredients) {
     for (const rtlr of retailers) {
       const now = Math.round((Date.now()) / 1000)
       for (const [term, identifier] of Object.entries(termToUID[rtlr])){
-        const cpg = await getIngredientPrice(rtlr, identifier)
+        const cpg = await getIngredientPrice(rtlr, identifier, term)
         
         if (!cache.hasOwnProperty(term)) { cache[term] = {} }
 
@@ -237,7 +276,7 @@ async function updateIngredients(ingredients) {
   })
 }
 
-async function getIngredientPrice(retailer, identifier) {
+async function getIngredientPrice(retailer, identifier, name) {
   const results = await runPython('./checkPrice.py', [retailer, identifier])
 
   if (!results[0]) {
@@ -245,9 +284,9 @@ async function getIngredientPrice(retailer, identifier) {
     return
   }
 
-  const price = new Ingredient(...JSON.parse(results[2][0].replaceAll("'", '"')))
+  const price = new Ingredient(...JSON.parse(results[2][0].replaceAll("'", '"').replaceAll('"name"', `"${name}"`)))
   const priceGrams = convertToWeight(price)
-  const pricePerGram = (100 * parseFloat(priceGrams.name)) / priceGrams.amount
+  const pricePerGram = (100 * parseFloat(priceGrams.price)) / priceGrams.amount
 
   return pricePerGram
 }
@@ -277,11 +316,11 @@ function waitUntilClose(window) { // more utils!!!
 }
 
 function updateScaleText() { // move to a utils.js file
-  label = document.getElementById("serSclCostLabel")
-  select = document.getElementById("adjustMenu")
-  texts = {
-    '0': 'Servings: ',
-    '1': 'Scale To: ',
+  const label = document.getElementById("serSclCostLabel")
+  const select = document.getElementById("adjustMenu")
+  const texts = {
+    '0': 'Scale To: ',
+    '1': 'Servings: ',
     '2': 'Target Cost: $'
   }
   label.innerHTML = texts[select.selectedIndex]

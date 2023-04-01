@@ -100,7 +100,7 @@ Parameters:
 Returns:
 	A tuple containing the parsed ingredient.
 """
-def rp_parse_ingredient(string):
+def rp_parse_ingredient_unit_prefix(string):
 	#advance *, -, and spaces
 	string = string.strip()
 	while len(string) > 0 and (string[0] == '-' or string[0] == '*' or string[0] == ' '):
@@ -192,3 +192,124 @@ def rp_parse_ingredient(string):
 		tok = tok[1:]
 	
 	return (amount, unit_name, " ".join(tok).strip())
+
+"""
+Check the return value of ingredient parsing to determine if the parse was
+successful or not.
+
+Parameters:
+	ingredient_tuple:	The return from parsing
+
+Returns:
+	True if the parsing was successful, false otherwise.
+"""
+def rp_parse_success(ingredient_tuple):
+	if ingredient_tuple[0] == 0 or ingredient_tuple[1] == None or ingredient_tuple[2] == None:
+		return False
+	return True
+
+"""
+Get a complete list of indices of occurrences of a set of characters in a
+string.
+
+Parameters:
+	string:				The string to search
+	chars:				The set of characters to search for
+
+Returns:
+	A list of indices of occurrences of characters in the string.
+"""
+def rp_strchr_multi(string, chars):
+	#build a list of indices to this char
+	indices = []
+	
+	index = 0
+	for c in string:
+		if c in chars:
+			indices.append(index)
+		index += 1
+		
+	return indices
+
+"""
+Performs substitutions specified in a map on a string. Keys from the map are
+replaced by their corresponding values.
+
+Parameters:
+	string:				The string to perform substitutions on
+	map:				The map containing the substitutions
+
+Returns:
+	The input string after processing all of the substitutions.
+"""
+def rp_perform_substitutions(string, map):
+	#perform all substitutions
+	out = string
+	for entry in map.items():
+		key = entry[0]
+		val = entry[1]
+		if key in out:
+			out = out.replace(key, val)
+	
+	return out
+
+"""
+Parses an ingredient string composed of a measurement and ingredient. If the
+ingredient parsing succeeds, it returns a tuple containing (amount, unit, name).
+If it fails, it returns a tuple (0, None, None).
+
+Parameters:
+	string:				The string to parse
+
+Returns:
+	A tuple containing the parsed ingredient.
+"""
+def rp_parse_ingredient(string):
+	#process Unicode substitutions
+	string = rp_perform_substitutions(string, {
+		"¼":	" 1/4",		#00BC
+		"½":	" 1/2",		#00BD
+		"¾":	" 3/4",		#00BE
+		"⅐":	" 1/7",		#2150
+		"⅑":	" 1/9",		#2151
+		"⅒":	" 1/10",	#2152
+		"⅓":	" 1/3",		#2153
+		"⅔":	" 2/3",		#2154
+		"⅕":	" 1/5",		#2155
+		"⅖":	" 2/5",		#2156
+		"⅗":	" 3/5",		#2157
+		"⅘":	" 4/5",		#2158
+		"⅙":	" 1/6",		#2159
+		"⅚":	" 5/6",		#215A
+		"⅛":	" 1/8",		#215B
+		"⅜":	" 3/8",		#215C
+		"⅝":	" 5/8",		#215D
+		"⅞":	" 7/8",		#215E
+		
+		#to make tokenization a little easier
+		")":	" )"
+	})
+	string = string.strip()
+	
+	#try parse as normal
+	try_parsed = rp_parse_ingredient_unit_prefix(string)
+	if (try_parsed[0] > 0 and try_parsed[1] != None and try_parsed[2] != None):
+		return try_parsed
+	
+	#there was one or more problems parsing.
+	#try the string token by token.
+	tok_indices = rp_strchr_multi(string, " -(),") #characters we expect could separate parts
+	
+	for tok_index in tok_indices:
+		separator = string[tok_index]
+		post = string[tok_index + 1:]
+		try_parsed = rp_parse_ingredient_unit_prefix(post)
+		
+		if rp_parse_success(try_parsed):
+			#fix up output string to exclude unit. 
+			#TODO: more advanced processing if necessary?
+			new_ingredient_name = string[0:tok_index].strip()
+			return (try_parsed[0], try_parsed[1], new_ingredient_name)
+	
+	#in failure
+	return (0, None, None)

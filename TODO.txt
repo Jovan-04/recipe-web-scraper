@@ -1,8 +1,15 @@
 TODO:
 	better GUI
-	improve parser
-	implement check price for walmart.com
-	fuzzy string substitution
+
 	densities
-	processing of strings before and after parsing
-	make ingredient cost update when retailer menu gets switched, not have to calculate again
+	density auto-parser/calcultor from the web
+	need some way to apply those densities to many different variations on an ingredient entry:
+		substrings, unique matches, levenshtein distance?
+
+	DECLAN:
+		processing of strings before and after parsing
+		improve parser
+		fuzzy string substitution (?)
+
+	EVAN:
+		return ingredients in original quantities

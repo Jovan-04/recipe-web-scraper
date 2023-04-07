@@ -3,24 +3,30 @@ from sys import argv
 
 def main(retailer, query):
     if retailer == 'target':
+        # http get request from target's search API
         search = requests.get(f'https://redsky.target.com/redsky_aggregations/v1/web/plp_search_v2?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&channel=WEB&count=24&keyword={query}&offset=0&page=%2Fs&platform=desktop&pricing_store_id=2041&scheduled_delivery_store_id=1832&store_ids=2041%2C1791%2C69%2C1901%2C1767&useragent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F109.0.0.0+Safari%2F537.36&visitor_id=0182666D922002019366877E20398E2E&zip=55434')
 
-        if search.status_code != 200:
-            raise Exception("Search get request failed with response {search}")
+        if search.status_code != 200: # check to make sure we got a valid response
+            raise Exception(f"Search get request failed with response {search}")
 
+        # get response as json, then get the items from it
         products = search.json()['data']['search']['products']
 
         results = []
 
         for prod in products:
-            title = prod['item']['product_description']['title'].replace("'", "")
-            price = prod['price']['formatted_current_price']
-            tcin = prod['tcin']
-            results.append(f'{title}: {price}; TCIN (UID): {tcin}')
+            try: # attempt to parse each individual product
+                title = prod['item']['product_description']['title'].replace("'", "")
+                price = prod['price']['formatted_current_price']
+                tcin = prod['tcin']
+                results.append(f'{title}: {price}; TCIN (UID): {tcin}')
+            except: # if there's an error, ignore it
+                pass
             
         return results
 
     if retailer == 'walmart':
+        # set request params and headers because walmart will deny the request otherwise
         PARAMS = {'variables': '{"id":"","dealsId":"","query":"' + query + '","page":1,"prg":"desktop","catId":"","facet":"","sort":"best_match","rawFacet":"","seoPath":"","ps":40,"ptss":"","trsp":"","beShelfId":"","recall_set":"","module_search":"","min_price":"","max_price":"","storeSlotBooked":"","additionalQueryParams":{"hidden_facet":null,"translation":null,"isMoreOptionsTileEnabled":true},"searchArgs":{"query":"' + query + '","cat_id":"","prg":"desktop","facet":""},"fitmentFieldParams":{"powerSportEnabled":true},"fitmentSearchParams":{"id":"","dealsId":"","query":"' + query + '","page":1,"prg":"desktop","catId":"","facet":"","sort":"best_match","rawFacet":"","seoPath":"","ps":40,"ptss":"","trsp":"","beShelfId":"","recall_set":"","module_search":"","min_price":"","max_price":"","storeSlotBooked":"","additionalQueryParams":{"hidden_facet":null,"translation":null,"isMoreOptionsTileEnabled":true},"searchArgs":{"query":"' + query + '","cat_id":"","prg":"desktop","facet":""},"cat_id":"","_be_shelf_id":""},"enableFashionTopNav":false,"enableRelatedSearches":false,"enablePortableFacets":true,"enableFacetCount":true,"fetchMarquee":true,"fetchSkyline":true,"fetchGallery":false,"fetchSbaTop":true,"tenant":"WM_GLASS","enableFlattenedFitment":true,"pageType":"SearchPage"}'}
         HEADERS = { # this is ugly, but there's really nothing I can do about it because walmart hates me
             'authority': 'www.walmart.com',
@@ -47,25 +53,29 @@ def main(retailer, query):
             'x-o-segment': 'oaoh'
         }
 
+        # http get request from walmart's crappy search API
         search = requests.get('https://www.walmart.com/orchestra/snb/graphql/Search/9a02e6e7b5db0aba794042ee2b0cb04e9166c05958e97f8967dd86e2b6efdbf6/search', params=PARAMS, headers=HEADERS)        
 
-        if search.status_code != 200:
-            raise Exception("Search get request failed with response {search}") # replace this with a bs4 scraper
+        if search.status_code != 200: # check to make sure we got a valid response
+            raise Exception(f"Search get request failed with response {search}")
         
+        # get response as json, then get the items from it
         products = search.json()['data']['search']['searchResult']['itemStacks'][0]['itemsV2']
         
         results = []
 
         for prod in products:
-            try:
+            try: # attempt to parse each individual product
                 title = prod['name'].replace("'", "")
                 price = prod['priceInfo']['currentPrice']['priceString']
                 sku = prod['usItemId']
                 results.append(f'{title}: {price}; SKU (UID): {sku}')
-            except:
+            except: # if there's an error, ignore it
                 pass
         
         return results
+
+    raise Exception(f"{retailer} is not a valid retailer.")
 
 if __name__ == "__main__":
     print(main(argv[1], argv[2]))

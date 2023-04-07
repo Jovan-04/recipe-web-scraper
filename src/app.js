@@ -14,14 +14,8 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      backgroundThrottling: false // Keep 'false' (Performance drops when window is minimized)
-    },
-    // titleBarStyle: 'hidden',
-    // titleBarOverlay: {
-    //   color: '#2f3241',
-    //   symbolColor: '#74b1be',
-    //   height: 15
-    // }
+      backgroundThrottling: false
+    }
   })
 
   win.removeMenu()

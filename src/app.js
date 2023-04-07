@@ -10,7 +10,7 @@ function createWindow () {
     minWidth: 800,
     height: 600,
     minHeight: 600,
-    icon: "../assets/sushi.png",
+    icon: "../assets/ednaLogo.ico",
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,

@@ -88,23 +88,33 @@ async function calculateRecipeCosts() { // runs when the 'calculate' button is c
     }
   }
 
-  for (const ing of ingredientsByWeight) { // calculate final price for each item
-    const centsPerGram = cache[ing.name][retailer]['cents_per_gram']
-    const price = parseFloat(((ing.amount * centsPerGram * modifier) / 100).toFixed(2))
+  console.log(ingredients)
+
+  for (let i = 0; i < ingredients.length; i++) {
+    const ing = ingredients[i] // get original ingredient
+    const ingWeight = ingredientsByWeight[i] // get ingredient converted to weight
+
+    const centsPerGram = cache[ing.name][retailer]['cents_per_gram'] // get price based on weight
+    const price = ((ingWeight.amount * centsPerGram * modifier) / 100).toFixed(2)
     const amount = ing.amount * modifier
     const name = ing.name
-    console.log(`${amount}g of ${name} costs $${price} from ${retailer}.`)
-    output = `${amount.toFixed(1)}g ${name}: $${price}`
+    let unit = ` ${ing.unit}`
+
+    if (ing.amount * modifier !== 1) unit = ` ${ing.unit}s` // properly pluralize units
+    if (ing.unit === 'count') unit = '' // and remove unit if it's a count (e.g. 3 count eggs)
+
+    console.log(`${amount} ${ing.unit} (${ingWeight.amount * modifier}g) of ${name} costs $${price} from ${retailer}.`)
+    const output = `${parseFloat(amount.toFixed(3))}${unit} ${name}: $${price}` // this is what we send to the output
 
     toDom.push(output)
-    netPrice += price
+    netPrice += parseFloat(price)
   }
 
   const target = document.getElementById("ingredOut") // clear current output
   target.innerHTML = ""
 
   const p = document.createElement('p') // send modifier info to dom
-  p.innerHTML = `Recipe Breakdown (${modifier}x original quantities):`
+  p.innerHTML = `Recipe Breakdown (${parseFloat(modifier.toFixed(4))}x original quantities):`
   target.appendChild(p)
 
   for (const ing of toDom) { // send all ingredients to dom

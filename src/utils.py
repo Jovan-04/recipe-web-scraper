@@ -113,7 +113,7 @@ def rp_parse_ingredient_unit_prefix(string):
 	string = string.lstrip()
 	
 	#tokenize
-	tok = string.lower().split(" ")
+	tok = string.split(" ")
 	
 	#if there's no token, return error
 	if (len(tok) == 0):
@@ -160,9 +160,15 @@ def rp_parse_ingredient_unit_prefix(string):
 	for name_entry in aliases.items():
 		full_name = name_entry[0]
 		names = name_entry[1]
-		if unit_tok in names:
+		if unit_tok.lower() in names:
 			unit_name = full_name
 			break
+	
+	#check for t or T (teaspoon 
+	if unit_tok == "t":
+		unit_name = "teaspoon"
+	elif unit_tok == "T":
+		unit_name = "tablespoon"
 	
 	#if token isn't known, return it as a count if it's an integer. Otherwise, error.
 	if unit_name == None and amount == int(amount) and amount > 0:
@@ -191,7 +197,7 @@ def rp_parse_ingredient_unit_prefix(string):
 	if len(tok) > 0 and tok[0] == "of":
 		tok = tok[1:]
 	
-	return (amount, unit_name, " ".join(tok).strip())
+	return (amount, unit_name, " ".join(tok).strip().lower())
 
 """
 Check the return value of ingredient parsing to determine if the parse was

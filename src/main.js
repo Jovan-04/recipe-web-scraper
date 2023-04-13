@@ -4,12 +4,13 @@ const fs = require('fs')
 
 // import stuff from other files
 const cache = require('../assets/cache.json')
-const densities = require('../assets/densities.json')
+const densities = require('../assets/gramsPerCubicCM.json')
+const gramsCount = require('../assets/gramsPerCount.json')
 
 const { Ingredient, sleep, retailers, fromXToGrams, fromXToCubCM, waitUntilClose, updateScaleText } = require('./utils.js')
 
 
-async function main() { // runs when the 'calculate' button is clicked
+async function calculateRecipeCosts() { // runs when the 'calculate' button is clicked
   const ingredientList = document.getElementById('ingredInText').value
   const ingredientLines = ingredientList.split('\n') // split text input box into individual lines
 
@@ -19,6 +20,7 @@ async function main() { // runs when the 'calculate' button is clicked
     let result = await parseIngredient(line)
 
     if (result === "manual") {
+      result = await manualParse(line)
       // if result is a manual parsing request, act on it and call again
     }
 
@@ -29,9 +31,19 @@ async function main() { // runs when the 'calculate' button is clicked
 
   // ingredients is now an array of Ingredient objects [...]
   const ingredientNames = new Set() // these are all the ingredients we need to get prices for
+  const ingredientsDensity = new Set()
+  const ingredientsCount = new Set()
+
   for (const ing of ingredients) {
     ingredientNames.add(ing.name)
+    if (['count'].includes(ing.unit)) ingredientsCount.add(ing.name)
+    if (['ounce', 'pound', 'gram', 'kilogram', 'teaspoon', 'tablespoon', 'fluid ounce', 'cup', 'quart', 'pint', 'gallon', 'liter', 'milliliter']
+    .includes(ing.unit)) ingredientsDensity.add(ing.name)
   }
+
+  await checkGramsPerCubicCM(ingredientsDensity) // check that all necessary ingredients in our recipe have a density
+
+  await checkGramsPerCount(ingredientsCount) // check that all necessary ingredients in our recipe have a weight/count
 
   await updateIngredients(ingredientNames) // update cached prices for all ingredients in our recipe
 
@@ -153,10 +165,19 @@ function convertToWeight(ingredient) { // convert an ingredient from any unit to
     const newUnit = 'gram'
     return new Ingredient(newAmount, newUnit, ingredient.name, ingredient.price)
   }
+
+  // if it's a count, convert directly to weight using the count conversions
+  if (['count'].includes(ingredient.unit)) {
+    const newAmount = ingredient.amount * gramsCount[ingredient.name]
+    const newUnit = 'gram'
+    return new Ingredient(newAmount, newUnit, ingredient.name, ingredient.price)
+  }
+
+  throw new Error(`Invalid unit ${ingredient.unit} for weight conversion`)
 }
 
 async function updateIngredients(ingredients) { // updates the prices of ingredients needed in the recipe
-  const entriesToCreate = []
+  const entriesToCreate = [] // change to using a set?
 
   for (const ing of ingredients.values()) {
     if (cache.hasOwnProperty(ing)) { // check timestamp and update if needed
@@ -304,6 +325,50 @@ async function updateIngredients(ingredients) { // updates the prices of ingredi
     if (err) throw err
     console.log('file saved')
   })
+}
+
+async function checkGramsPerCubicCM(ingredients) { // checks to make sure all ingredients in our recipe have a valid density
+  const densitiesToGet = new Set()
+
+  for (const ing of ingredients) {
+    if (densities.hasOwnProperty(ing)) continue
+    densitiesToGet.add(ing)
+  }
+
+  for (const ing of densitiesToGet) {
+    // first, check if there are any ingredients already existing that look like they could match
+    // substrings, unique matches, levenshtein distance?
+
+    // if there are, confirm with user
+    // create a new entry with the same density, but under the key `ing`
+
+    // if there are no similar enough strings, prompt user to input a density in grams/mL
+    // create a new entry with the input density, under the key `ing`
+
+    // profit!
+  }
+}
+
+async function checkGramsPerCount(ingredients) {
+  const gramsCountToGet = new Set()
+
+  for (const ing of ingredients) {
+    if (gramsCount.hasOwnProperty(ing)) continue
+    gramsCountToGet.add(ing)
+  }
+
+  for (const ing of gramsCountToGet) {
+    // first, check if there are any ingredients already existing that look like they could match
+    // substrings, unique matches, levenshtein distance?
+
+    // if there are, confirm with user
+    // create a new entry with the same density, but under the key `ing`
+
+    // if there are no similar enough strings, prompt user to input a density in grams/mL
+    // create a new entry with the input density, under the key `ing`
+
+    // profit!
+  }
 }
 
 async function getIngredientPrice(retailer, identifier, name) { // gets an ingredient's price and returns in cents per gram

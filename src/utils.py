@@ -68,7 +68,7 @@ def rp_parse_quantity(string):
 	elif (len(string) > 0 and (string[0] == '-' or string[0] == ' ')):
 		backup_str = string
 		part3 = 0
-		string = string[1:]
+		string = string[1:].lstrip()
 		
 		(part2, string) = rp_parse_integer(string);
 		if (len(string) > 0 and part2 > 0 and string[0] == '/'):

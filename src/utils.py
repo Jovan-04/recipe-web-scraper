@@ -259,6 +259,46 @@ def rp_perform_substitutions(string, map):
 	
 	return out
 
+def rp_sift_parentheses(string):
+	#state machine time
+	output_str = "";
+	parenthesized = []
+	depth = 0
+	string_buf = ""
+	
+	#iterate the string
+	for c in string:
+		#handle parentheses
+		if c == '(':
+			#reset parenthesized string buffer
+			if depth == 0:
+				string_buf = ""
+			#increase depth
+			depth += 1
+			continue
+		elif c == ')' and depth > 0:
+			#decrement depth
+			depth -= 1
+			if depth == 0:
+				#push string
+				parenthesized.append(" ".join(string_buf.split()).strip())
+				string_buf = ""
+				
+				output_str += " " #just make sure there's whitespace here, we can remove extras later
+			continue
+		
+		#else, add to output string
+		if depth == 0:
+			output_str += c
+		else:
+			string_buf += c
+	
+	#if we haven't flushed the parenthesized buffer, do so now.
+	if string_buf != "":
+		parenthesized.append(string_buf)
+	
+	return (" ".join(output_str.split()).strip(), parenthesized)
+
 """
 Parses an ingredient string composed of a measurement and ingredient. If the
 ingredient parsing succeeds, it returns a tuple containing (amount, unit, name).
@@ -296,6 +336,23 @@ def rp_parse_ingredient(string):
 		")":	" )"
 	})
 	string = string.strip()
+	
+	#try parsing using parentheses
+	sifted = rp_sift_parentheses(string)
+	parenthesized = sifted[1]
+	if len(parenthesized) > 0:
+		#great, we've got something to work with maybe! Try parsing them as amounts. The first
+		#one that works is what we're gonna roll with.
+		try_parsed = rp_parse_ingredient_unit_prefix(sifted[0])
+		if rp_parse_success(try_parsed):
+			#works
+			return try_parsed
+		
+		for unit in parenthesized:
+			try_parsed = rp_parse_ingredient_unit_prefix(unit)
+			if rp_parse_success(try_parsed):
+				#yay
+				return (try_parsed[0], try_parsed[1], sifted[0])
 	
 	#try parse as normal
 	try_parsed = rp_parse_ingredient_unit_prefix(string)

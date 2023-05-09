@@ -1,38 +1,206 @@
 {
     "flour": {
         "target": {
-            "unix_time_updated": 1679858557,
+            "unix_time_updated": 1683634592,
             "cents_per_gram": 0.1054,
             "identifier": "77640693"
         },
         "walmart": {
-            "unix_time_updated": 1679717363,
+            "unix_time_updated": 1683634592,
             "cents_per_gram": 0.0935,
             "identifier": "10403017"
         }
     },
     "butter": {
         "target": {
-            "unix_time_updated": 1679710824,
+            "unix_time_updated": 1683634580,
             "cents_per_gram": 0.8796,
             "identifier": "54445965"
         },
         "walmart": {
-            "unix_time_updated": 1679710824,
-            "cents_per_gram": 0.8744,
+            "unix_time_updated": 1683634580,
+            "cents_per_gram": 0.8774,
             "identifier": "132893363"
         }
     },
     "sugar": {
         "target": {
-            "unix_time_updated": 1679859555,
+            "unix_time_updated": 1683634584,
             "cents_per_gram": 0.1648,
             "identifier": "78471310"
         },
         "walmart": {
-            "unix_time_updated": 1679859556,
-            "cents_per_gram": 1.7596,
+            "unix_time_updated": 1683634584,
+            "cents_per_gram": 1.7593,
             "identifier": "607145619"
+        }
+    },
+    "cinnamon": {
+        "target": {
+            "unix_time_updated": 1680899094,
+            "cents_per_gram": 1.8841,
+            "identifier": "77586380"
+        },
+        "walmart": {
+            "unix_time_updated": 1680899095,
+            "cents_per_gram": 10.3616,
+            "identifier": "47914031"
+        }
+    },
+    "eggs": {
+        "target": {
+            "unix_time_updated": 1683634587,
+            "cents_per_gram": 0.4982,
+            "identifier": "14713534"
+        },
+        "walmart": {
+            "unix_time_updated": 1683634587,
+            "cents_per_gram": 0.5614,
+            "identifier": "137241460"
+        }
+    },
+    "milk": {
+        "target": {
+            "unix_time_updated": 1681404083,
+            "cents_per_gram": 0.0931,
+            "identifier": "12925351"
+        },
+        "walmart": {
+            "unix_time_updated": 1681404084,
+            "cents_per_gram": 0.076,
+            "identifier": "10450114"
+        }
+    },
+    "brown sugar": {
+        "target": {
+            "unix_time_updated": 1683634590,
+            "cents_per_gram": 0.2194,
+            "identifier": "78494376"
+        },
+        "walmart": {
+            "unix_time_updated": 1683634590,
+            "cents_per_gram": 0.2028,
+            "identifier": "10315012"
+        }
+    },
+    "vanilla": {
+        "target": {
+            "unix_time_updated": 1683634590,
+            "cents_per_gram": 11.2295,
+            "identifier": "82247489"
+        },
+        "walmart": {
+            "unix_time_updated": 1683634590,
+            "cents_per_gram": 10.6761,
+            "identifier": "10314950"
+        }
+    },
+    "baking soda": {
+        "target": {
+            "unix_time_updated": 1683634594,
+            "cents_per_gram": 0.2183,
+            "identifier": "77586146"
+        },
+        "walmart": {
+            "unix_time_updated": 1683634594,
+            "cents_per_gram": 0.2161,
+            "identifier": "10291025"
+        }
+    },
+    "salt": {
+        "target": {
+            "unix_time_updated": 1683634597,
+            "cents_per_gram": 0.0936,
+            "identifier": "78140513"
+        },
+        "walmart": {
+            "unix_time_updated": 1683634597,
+            "cents_per_gram": 0.0868,
+            "identifier": "10448311"
+        }
+    },
+    "chocolate chips": {
+        "target": {
+            "unix_time_updated": 1683634599,
+            "cents_per_gram": 1.1596,
+            "identifier": "17280886"
+        },
+        "walmart": {
+            "unix_time_updated": 1683634599,
+            "cents_per_gram": 1.2111,
+            "identifier": "14172101"
+        }
+    },
+    "sour cream": {
+        "target": {
+            "unix_time_updated": 1681418868,
+            "cents_per_gram": 0.4387,
+            "identifier": "79556010"
+        },
+        "walmart": {
+            "unix_time_updated": 1681418872,
+            "cents_per_gram": 0.4145,
+            "identifier": "12335111"
+        }
+    },
+    "baking powder": {
+        "target": {
+            "unix_time_updated": 1681418868,
+            "cents_per_gram": 0.9537,
+            "identifier": "77754271"
+        },
+        "walmart": {
+            "unix_time_updated": 1681418872,
+            "cents_per_gram": 0.8622,
+            "identifier": "16627955"
+        }
+    },
+    "water": {
+        "target": {
+            "unix_time_updated": 9999999999,
+            "cents_per_gram": 0,
+            "identifier": "00000000"
+        },
+        "walmart": {
+            "unix_time_updated": 9999999999,
+            "cents_per_gram": 0,
+            "identifier": "00000000"
+        }
+    },
+    "apples": {
+        "target": {
+            "unix_time_updated": 1683668476,
+            "cents_per_gram": 0.4035,
+            "identifier": "54579522"
+        },
+        "walmart": {
+            "unix_time_updated": 1683668476,
+            "cents_per_gram": 0.391,
+            "identifier": "44390991"
+        }
+    },
+    "packed brown sugar": {
+        "target": {
+            "unix_time_updated": 1683634590,
+            "cents_per_gram": 0.2194,
+            "identifier": "78494376"
+        },
+        "walmart": {
+            "unix_time_updated": 1683634590,
+            "cents_per_gram": 0.2028,
+            "identifier": "10315012"
+        }
+    },
+    "granny smith apples": {
+        "target": {
+            "unix_time_updated": 1683668476,
+            "cents_per_gram": 0.4035,
+            "identifier": "54579522"
+        },
+        "walmart": {
+            "unix_time_updated": 1683668476,
+            "cents_per_gram": 0.391,
+            "identifier": "44390991"
         }
     }
 }

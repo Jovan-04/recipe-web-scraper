@@ -14,38 +14,49 @@
 	<p> A recipe parser, web scraper, and cost calculator created by Declan Moore and Evan Scherrer </p>
   </fieldset>
 
-  <fieldset id="ingredIn"> 
-    <legend> Ingredients List </legend>
-    <textarea id="ingredInText" rows="8" cols="40"></textarea>
-    <p> Makes <input id="servingIn" type="number" style="width: 40px;" value="1"> servings (optional) </p>
-  </fieldset>
-
-  <fieldset id="adjust">
-    <legend> Adjust Recipe </legend>
-    <p> <input type="checkbox" id="cbAdjust"> <label for="cbAdjust"> Adjust Quantity </label> </p>
-    <p> Adjust By <select id="adjustMenu" onchange="updateScaleText()">
-      <option value="scaleFactor"> Scale Factor </option>
-      <option value="servings"> Servings </option>
-      <option value="cost"> Cost </option>
-    </select> </p>
-    <p id="serSclCostLabel" style="display: inline;"> Scale To: </p> <input type="number" id="serSclCostInput" value="1">
-  </fieldset>
-
-  <fieldset id="output">
-    <legend> Cost of Ingredients </legend>
-    <p> Retailer: <select name="retailer" id="selectRetailer">
-      <option value="target"> Target </option>
-      <option value="walmart"> Walmart </option>  
-    </select> </p>
-    <p> Net Cost: $<input id="netCost" type="text" value="0.00" readonly> </p>
-    <div id="ingredOut">
-      <p> No ingredients selected </p>
-    </div>
-  </fieldset>
-
-  <div class="uipadding">
-    <input type="button" value="Calculate" onclick="calculateRecipeCosts()">
-  </div>
-
-</body>
+  <table class="ui100">
+    <tbody>
+      <tr>
+        <td class="ui50">
+          <fieldset id="ingredIn"> 
+            <legend> Ingredients List </legend>
+            <textarea id="ingredInText" rows="8" cols="40"></textarea>
+            <p> Makes <input id="servingIn" type="number" style="width: 40px;" value="1"> servings (optional) </p>
+          </fieldset>
+        
+          <fieldset id="adjust">
+            <legend> Adjust Recipe </legend>
+            <p> <input type="checkbox" id="cbAdjust"> <label for="cbAdjust"> Adjust Quantity </label> </p>
+            <p> Adjust By <select id="adjustMenu" onchange="updateScaleText()">
+              <option value="scaleFactor"> Scale Factor </option>
+              <option value="servings"> Servings </option>
+              <option value="cost"> Cost </option>
+            </select> </p>
+            <p id="serSclCostLabel" style="display: inline;"> Scale To: </p> <input type="number" id="serSclCostInput" value="1">
+          </fieldset>
+        
+      
+        </td>
+        <td class="ui50">
+          
+          <fieldset id="output">
+            <legend> Cost of Ingredients </legend>
+            <p> Retailer: <select name="retailer" id="selectRetailer">
+              <option value="target"> Target </option>
+              <option value="walmart"> Walmart </option>  
+            </select> </p>
+            <p> Net Cost: $<input id="netCost" type="text" value="0.00" readonly> </p>
+            <div id="ingredOut">
+              <p> No ingredients selected </p>
+            </div>
+          </fieldset>
+        
+          <div class="uipadding">
+            <input type="button" value="Calculate" onclick="calculateRecipeCosts()">
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </body>
 </html>

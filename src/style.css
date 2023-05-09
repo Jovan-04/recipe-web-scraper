@@ -114,3 +114,13 @@ option:hover {
 #serSclCostInput {
 	width: 80px;
 }
+
+.ui50 {
+	width: 50%;
+}
+.ui100 {
+	width: 100%;
+}
+table * td {
+	vertical-align: top;
+}

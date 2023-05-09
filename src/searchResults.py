@@ -4,10 +4,10 @@ from sys import argv
 def main(retailer, query):
     if retailer == 'target':
         # http get request from target's search API
-        search = requests.get(f'https://redsky.target.com/redsky_aggregations/v1/web/plp_search_v2?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&channel=WEB&count=24&keyword={query}&offset=0&page=%2Fs&platform=desktop&pricing_store_id=2041&scheduled_delivery_store_id=1832&store_ids=2041%2C1791%2C69%2C1901%2C1767&useragent=Mozilla%2F5.0+%28Windows+NT+10.0%3B+Win64%3B+x64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F109.0.0.0+Safari%2F537.36&visitor_id=0182666D922002019366877E20398E2E&zip=55434')
+        search = requests.get(f'https://redsky.target.com/redsky_aggregations/v1/web/plp_search_v2?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&channel=WEB&count=24&keyword={query}&offset=0&page=1&pricing_store_id=1832&visitor_id=0188021CAB690201B0C889396D7E181B', headers={'User-Agent': 'Custom'})
 
         if search.status_code != 200: # check to make sure we got a valid response
-            raise Exception(f"Search get request failed with response {search}")
+            raise Exception(f"Search get request failed with response {search} from retailer {retailer}")
 
         # get response as json, then get the items from it
         products = search.json()['data']['search']['products']
@@ -57,7 +57,7 @@ def main(retailer, query):
         search = requests.get('https://www.walmart.com/orchestra/snb/graphql/Search/9a02e6e7b5db0aba794042ee2b0cb04e9166c05958e97f8967dd86e2b6efdbf6/search', params=PARAMS, headers=HEADERS)        
 
         if search.status_code != 200: # check to make sure we got a valid response
-            raise Exception(f"Search get request failed with response {search}")
+            raise Exception(f"Search get request failed with response {search} from retailer {retailer}")
         
         # get response as json, then get the items from it
         products = search.json()['data']['search']['searchResult']['itemStacks'][0]['itemsV2']

@@ -6,9 +6,8 @@ from bs4 import BeautifulSoup
 
 def main(retailer, identification):
     if retailer == 'target': # :heart_eyes:
-
         # http get request from target's product API
-        product = requests.get(f'https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin={int(identification)}&is_bot=false&store_id=2041&pricing_store_id=2041&has_pricing_store_id=true&scheduled_delivery_store_id=1832&visitor_id=0182666D922002019366877E20398E2E&channel=WEB')
+        product = requests.get(f'https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1?key=9f36aeafbe60771e321a7cc95a78140772ab3e96&tcin={int(identification)}&pricing_store_id=1832&channel=WEB', headers={'User-Agent': 'Custom'})
 
         if product.status_code != 200: # check to make sure we got a valid response
             raise Exception(f"Product get request failed with response {product}") # replace this with a bs4 scraper

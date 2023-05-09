@@ -7,7 +7,7 @@ const cache = require('../assets/cache.json')
 const densities = require('../assets/gramsPerCubicCM.json')
 const gramsCount = require('../assets/gramsPerCount.json')
 
-const { Ingredient, sleep, retailers, fromXToGrams, fromXToCubCM, waitUntilClose, updateScaleText } = require('./utils.js')
+const { Ingredient, sleep, retailers, fromXToGrams, fromXToCubCM, waitUntilClose, updateScaleText, levenshteinDistance, tokenizedMatching } = require('./utils.js')
 
 
 async function calculateRecipeCosts() { // runs when the 'calculate' button is clicked
@@ -330,7 +330,7 @@ async function updateIngredients(ingredients) { // updates the prices of ingredi
     }
   }
 
-  console.log('saving file...')
+  console.log('saving cache.json file...')
   fs.writeFile('../assets/cache.json', JSON.stringify(cache), (err) => { // save the cache stored in program memory to a file on the disk
     if (err) throw err
     console.log('file saved')
@@ -346,17 +346,32 @@ async function checkGramsPerCubicCM(ingredients) { // checks to make sure all in
   }
 
   for (const ing of densitiesToGet) {
-    // first, check if there are any ingredients already existing that look like they could match
-    // substrings, unique matches, levenshtein distance?
+    let response
+    for (const key of Object.keys(densities)) {
+      if ((levenshteinDistance(ing, key) < 3) || tokenizedMatching(ing, key)) {
+        response = await promptForIngredientEquality(ing, key)
 
-    // if there are, confirm with user
-    // create a new entry with the same density, but under the key `ing`
-
-    // if there are no similar enough strings, prompt user to input a density in grams/mL
-    // create a new entry with the input density, under the key `ing`
-
-    // profit!
+        if (response === true) {
+          densities[ing] = densities[key]
+          if (cache[key]) cache[ing] = cache[key]
+          break
+        }
+      }
+    }
+    if (!response) densities[ing] = parseFloat(await promptForIngredientDensity(ing))
   }
+
+  console.log('saving gramsPerCubicCM.json file...')
+  fs.writeFile('../assets/gramsPerCubicCM.json', JSON.stringify(densities), (err) => { // save the densities stored in program memory to a file on the disk
+    if (err) throw err
+    console.log('file saved')
+  })
+
+  console.log('saving cache.json file...')
+  fs.writeFile('../assets/cache.json', JSON.stringify(cache), (err) => { // save the cache stored in program memory to a file on the disk
+    if (err) throw err
+    console.log('file saved')
+  })
 }
 
 async function checkGramsPerCount(ingredients) {
@@ -368,17 +383,32 @@ async function checkGramsPerCount(ingredients) {
   }
 
   for (const ing of gramsCountToGet) {
-    // first, check if there are any ingredients already existing that look like they could match
-    // substrings, unique matches, levenshtein distance?
+    let response
+    for (const key of Object.keys(gramsCount)) {
+      if ((levenshteinDistance(ing, key) < 3) || tokenizedMatching(ing, key)) {
+        response = await promptForIngredientEquality(ing, key)
 
-    // if there are, confirm with user
-    // create a new entry with the same density, but under the key `ing`
-
-    // if there are no similar enough strings, prompt user to input a density in grams/mL
-    // create a new entry with the input density, under the key `ing`
-
-    // profit!
+        if (response === true) {
+          gramsCount[ing] = gramsCount[key]
+          if (cache[key]) cache[ing] = cache[key]
+          break
+        }
+      }
+    }
+    if (!response) gramsCount[ing] = parseFloat(await promptForIngredientWeight(ing))
   }
+
+  console.log('saving gramsPerCount.json file...')
+  fs.writeFile('../assets/gramsPerCount.json', JSON.stringify(gramsCount), (err) => { // save the densities stored in program memory to a file on the disk
+    if (err) throw err
+    console.log('file saved')
+  })
+
+  console.log('saving cache.json file...')
+  fs.writeFile('../assets/cache.json', JSON.stringify(cache), (err) => { // save the cache stored in program memory to a file on the disk
+    if (err) throw err
+    console.log('file saved')
+  })
 }
 
 async function getIngredientPrice(retailer, identifier, name) { // gets an ingredient's price and returns in cents per gram
@@ -407,4 +437,86 @@ async function getSearchResults(retailer, query) { // gets a list of search resu
   const products = JSON.parse(results[2][0].replaceAll("'", '"')) // parse the json from the python file
 
   return products // and return it as an array
+}
+
+async function promptForIngredientEquality(ing1, ing2) {
+  return new Promise(resolve => {
+    const dialog = document.createElement('dialog')
+    dialog.innerHTML = `
+    <form method="dialog">
+      <label>
+        Are <b>${ing1}</b> and <b>${ing2}</b> the same ingredient?
+      </label>
+      <button type="submit">Yes</button>
+      <button type="button" id="cancel">No</button>
+    </form>
+    `
+    dialog.querySelector('#cancel').addEventListener('click', () => {
+      dialog.close()
+      resolve(false)
+    })
+    dialog.querySelector('form').addEventListener('submit', event => {
+      event.preventDefault()
+      dialog.close()
+      resolve(true)
+    })
+    document.body.appendChild(dialog)
+    dialog.showModal()
+  })
+}
+
+async function promptForIngredientDensity(ing) {
+  return new Promise(resolve => {
+    const dialog = document.createElement('dialog')
+    dialog.innerHTML = `
+    <form method="dialog">
+      <label>
+        Please enter the density of ${ing} (grams per mL):
+        <input type="number" name="density" step="0.0001" required>
+      </label>
+      <button type="submit">OK</button>
+      <button type="button" id="cancel">Cancel</button>
+    </form>
+    `
+    dialog.querySelector('#cancel').addEventListener('click', () => {
+      dialog.close()
+      resolve(null)
+    })
+    dialog.querySelector('form').addEventListener('submit', event => {
+      event.preventDefault()
+      const density = event.target.elements.density.value
+      dialog.close()
+      resolve(density)
+    })
+    document.body.appendChild(dialog)
+    dialog.showModal()
+  })
+}
+
+async function promptForIngredientWeight(ing) {
+  return new Promise(resolve => {
+    const dialog = document.createElement('dialog')
+    dialog.innerHTML = `
+    <form method="dialog">
+      <label>
+        Please enter the weight of ${ing} (grams per count):
+        <input type="number" name="weight" step="0.0001" required>
+      </label>
+      <button type="submit">OK</button>
+      <button type="button" id="cancel">Cancel</button>
+    </form>
+    `
+    dialog.querySelector('#cancel').addEventListener('click', () => {
+      dialog.close()
+      resolve(null)
+    })
+    dialog.querySelector('form').addEventListener('submit', event => {
+      event.preventDefault()
+      const weight = event.target.elements.weight.value
+      dialog.close()
+      resolve(weight)
+    })
+    document.body.appendChild(dialog)
+    dialog.showModal()
+  })
 }

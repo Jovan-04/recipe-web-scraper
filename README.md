@@ -32,7 +32,7 @@ See example with my grandma's sour cream cookies:
 3. [Install Git (to clone this repo)](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)  
 4. Install Node Packages  
     - ElectronJS (run the project locally); run `npm install electron -g` in a terminal  
-    - Python-Shell (run python code from node.js); run `npm install python-shell` in a terminal  
+    - Python-Shell (run python code from node.js); run `npm install python-shell@3.0.1` in a terminal  
 5. Install Python Packages  
     - Requests (make HTTP requests for web scraping); run `pip install requests` in a terminal  
     - Beautiful Soup (parse product data from requests); run `pip install beautifulsoup4` in a terminal  

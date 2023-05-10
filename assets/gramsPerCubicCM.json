@@ -188,7 +188,7 @@
     "masa harina": 0.3875,
     "mascarpone cheese": 0.9458,
     "mashed potatoes": 0.8875,
-    "mashed sweet potatoes": 1.0,
+    "mashed sweet potatoes": 1,
     "mayonnaise": 0.9417,
     "medium rye flour": 0.4417,
     "meringue powder": 0.7167,
@@ -392,5 +392,6 @@
     "thyme, ground": 0.5112,
     "thyme leaves": 0.2744,
     "turmeric": 0.4793,
-    "wasabi powder": 0.3235
+    "wasabi powder": 0.3235,
+    "orange juice": 1.05
 }
